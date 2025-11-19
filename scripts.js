@@ -1,17 +1,44 @@
 /* --- DATOS DE PRUEBA --- */
 
-        const inventario = [
-            { producto: "Aceite 5W-30", cantidad: 50 },
-            { producto: "Grasa Multiuso", cantidad: 30 },
-            { producto: "Aceite 10W-40", cantidad: 20 }
-        ];
+         /* --- DATOS DE PRUEBA --- */
 
-        const vehiculos = [
-            { nombre: "Camión 1", productos: [] },
-            { nombre: "Camión 2", productos: [] }
-        ];
+const inventario = [
+    { 
+        nro: 1,
+        codigo: "A001",
+        producto: "Aceite 5W-30",
+        marca: "Castrol",
+        unidad: "Litros",
+        categoria: "Lubricantes",
+        cantidad: 50
+    },
+    { 
+        nro: 2,
+        codigo: "A002",
+        producto: "Grasa Multiuso",
+        marca: "Mobil",
+        unidad: "Kg",
+        categoria: "Grasas",
+        cantidad: 30
+    },
+    { 
+        nro: 3,
+        codigo: "A003",
+        producto: "Aceite 10W-40",
+        marca: "Shell",
+        unidad: "Litros",
+        categoria: "Lubricantes",
+        cantidad: 20
+    }
+];
 
-        const incidencias = [];
+const vehiculos = [
+    { nombre: "Camión 1", productos: [] },
+    { nombre: "Camión 2", productos: [] }
+];
+
+const incidencias = [];
+
 
         /* CAMBIO DE SECCIONES */
         function showSection(id) {
@@ -26,13 +53,23 @@
 
         /* INVENTARIO */
         function mostrarInventario() {
-            const tbody = document.querySelector("#tablaInventario tbody");
-            tbody.innerHTML = "";
-            inventario.forEach(item => {
-                tbody.innerHTML += `<tr><td>${item.producto}</td><td>${item.cantidad}</td></tr>`;
-            });
-        }
+    const tbody = document.querySelector("#tablaInventario tbody");
+    tbody.innerHTML = "";
 
+    inventario.forEach(item => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${item.nro}</td>
+                <td>${item.codigo}</td>
+                <td>${item.producto}</td>
+                <td>${item.marca}</td>
+                <td>${item.unidad}</td>
+                <td>${item.categoria}</td>
+                <td>${item.cantidad}</td>
+            </tr>
+        `;
+    });
+}
         /* DESPACHO */
         function prepararDespacho() {
             document.getElementById("alertaDespacho").innerHTML = "";
@@ -2188,4 +2225,5 @@
                 y += 10;
             });
             doc.save("reporte.pdf");
+
         }
