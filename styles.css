@@ -1,0 +1,236 @@
+        :root {
+            --primary: #0a3d62;
+            --primary-light: #124d7a;
+            --accent: #2d98da;
+            --text-dark: #2f3640;
+            --text-light: #ffffff;
+            --bg-light: #f5f6fa;
+            --bg-white: #ffffff;
+            --border: #dcdde1;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+        }
+
+        /* HEADER SUPERIOR */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        /* MENÚ IZQUIERDA */
+        .menu-izquierda {
+            width: 240px;
+            height: max-content;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-title {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-izquierda button {
+            width: 100%;
+            padding: 14px 20px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-izquierda button:hover {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--accent);
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        section {
+            display: none;
+            background: var(--bg-white);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        section.active {
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-weight: 600;
+            border-left: 4px solid var(--accent);
+            padding-left: 10px;
+        }
+
+        /* TABLAS */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: #ecf0f1;
+        }
+
+        /* INPUTS */
+        input[type="number"],
+        select {
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        /* BOTONES DE ACCIÓN */
+        .btn {
+            margin-top: 15px;
+            padding: 12px 18px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #1b79b6;
+        }
+
+        /* BOTONES SECUNDARIO */
+        .btn-2 {
+            margin-top: 15px;
+            padding: 12px 18px;
+            background: #d19a24;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-2:hover {
+            background-color: #97752a;
+        }
+
+        /* ALERTAS */
+        .alert {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .alert-error {
+            background: #ff7675;
+            color: white;
+        }
+
+        .alert-success {
+            background: #55efc4;
+            color: #2d3436;
+        }
+
+        /*---------------------------MODALES----------------------------------*/
+        /*---------------------------MODAL CLIENTES----------------------------------*/
+        /* Fondo del modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 80px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Caja del modal */
+        .modal-content {
+            background: #fff;
+            margin: auto;
+            padding: 50px;
+            width: 30%;
+            border-radius: 12px;
+            animation: aparecer 0.3s ease;
+        }
+
+        /* Animación */
+        @keyframes aparecer {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Botón cerrar */
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: red;
+        }

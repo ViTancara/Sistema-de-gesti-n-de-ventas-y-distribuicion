@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventario y Despachos</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <header>Sistema de Inventario y Despachos de Lubricantes</header>
+
+    <div class="container">
+
+        <!-- MENÚ LATERAL -->
+        <nav class="menu-izquierda">
+            <div class="menu-title">Menú principal</div>
+
+            <button onclick="showSection('inventario')">📦 Inventario</button>
+            <button onclick="showSection('recepcion')">📥 Recepción</button>
+            <button onclick="showSection('despacho')">🚚 Despacho a Vehículos</button>
+
+            <div class="menu-title">Seguridad</div>
+            <button onclick="showSection('roles')">Roles</button>
+            <button onclick="showSection('permisos')">Permisos</button>
+            <button onclick="showSection('usuarios')">Usuarios</button>
+
+            <div class="menu-title">Comercial</div>
+            <button onclick="showSection('clientes')">Clientes</button>
+            <button onclick="showSection('proveedores')">Proveedores</button>
+            <button onclick="showSection('categorias')">Categorías</button>
+            <button onclick="showSection('marcas')">Marcas</button>
+            <button onclick="showSection('productos')">Productos</button>
+
+            <div class="menu-title">Operaciones</div>
+            <button onclick="showSection('solicitudIngreso')">Solicitud de Ingreso (tio)</button>
+            <button onclick="showSection('ordenSalida')">Orden de Salida</button>
+            <button onclick="showSection('ventas')">Ventas</button>
+            <button onclick="showSection('devoluciones')">Devoluciones</button>
+
+            <div class="menu-title">Sistema</div>
+            <button onclick="showSection('sucursales')">Sucursales</button>
+            <button onclick="showSection('configuracionSistema')">Configuración del Sistema</button>
+            <button onclick="showSection('ajustesUsuario')">Ajustes de Usuario</button>
+
+            <div class="menu-title">Reportes</div>
+            <button onclick="showSection('reportes')">Reportes</button>
+
+        </nav>
+
+
+        <main>
+            <!-- INVENTARIO -->
+            <section id="inventario" class="active">
+                <h2>Inventario General</h2>
+                <table id="tablaInventario">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <!-- DESPACHO -->
+            <section id="despacho">
+                <h2>Registrar Despacho</h2>
+
+                <label>Seleccionar vehículo:</label>
+                <select id="vehiculoSelect"></select>
+
+                <table id="tablaDespacho">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Stock Disponible</th>
+                            <th>Cantidad a Despachar</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <button class="btn" onclick="registrarDespacho()">Registrar</button>
+                <div id="alertaDespacho"></div>
+            </section>
+
+            <!-- RECEPCIÓN -->
+            <section id="recepcion">
+                <h2>Recepción de Vehículos</h2>
+
+                <label>Seleccionar vehículo:</label>
+                <select id="vehiculoRecepcion"></select>
+
+                <button class="btn" onclick="mostrarProductosVehiculo()">Ver Productos del Vehículo</button>
+
+                <table id="tablaRecepcion">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Enviado</th>
+                            <th>Recibido</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <button class="btn" onclick="confirmarRecepcion()">Confirmar Recepción</button>
+                <div id="alertaRecepcion"></div>
+            </section>
+
+            <!-- REPORTES -->
+            <section id="">
+                <h2>Reporte de Incidencias</h2>
+                <table id="tablaReportes">
+                    <thead>
+                        <tr>
+                            <th>Vehículo</th>
+                            <th>Producto</th>
+                            <th>Diferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+
+            <section id="roles">
+                <h2>Roles</h2>
+
+                <!-- Botón para agregar un nuevo rol -->
+                <button class="btn" onclick="mostrarFormularioRol()">Agregar Nuevo Rol</button>
+
+                <!-- Formulario oculto de nuevo rol -->
+                <div id="formRol"
+                    style="display:none; margin-top:15px; background:#f5f6fa; padding:15px; border-radius:8px; box-shadow:0px 1px 3px rgba(0,0,0,0.1);">
+                    <label for="nombreRol">Nombre del Rol:</label>
+                    <input type="text" id="nombreRol" placeholder="Ej: Administrador">
+                    <br><br>
+                    <label for="descRol">Descripción:</label>
+                    <input type="text" id="descRol" placeholder="Ej: Acceso total al sistema">
+                    <br><br>
+                    <label for="estadoRol">Estado:</label>
+                    <select id="estadoRol">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+                    <br><br>
+                    <button class="btn" onclick="agregarRol()">Guardar Rol</button>
+                    <button class="btn" style="background:#95a5a6;" onclick="cancelarFormularioRol()">Cancelar</button>
+                </div>
+
+                <!-- Tabla de roles existentes -->
+                <table style="margin-top:20px; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Rol</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaRoles">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </section>
+
+
+            <section id="permisos">
+                <h2>Permisos por Rol</h2>
+
+                <!-- Seleccionar rol -->
+                <label for="selectRol">Seleccionar Rol:</label>
+                <select id="selectRol" onchange="cargarPermisosRol()">
+                    <!-- Se llenará dinámicamente con los roles existentes -->
+                </select>
+
+                <!-- Tabla de permisos -->
+                <table style="margin-top:20px; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Permiso</th>
+                            <th>Asignado</th>
+                            <th>Ver</th>
+                            <th>Crear</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPermisosRol">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+
+                <button class="btn" style="margin-top:15px;" onclick="guardarPermisos()">Guardar Cambios</button>
+            </section>
+
+
+
+            <section id="usuarios">
+                <h2>Usuarios</h2>
+
+                <!-- Botón para agregar usuario -->
+                <input type="text" id="buscadorOrden" placeholder="Buscar..."
+                    style="padding:15px 20px; border-radius:6px; border:1px solid #ccc;">
+                <button class="btn" onclick="mostrarFormularioUsuario()">Agregar Usuario</button>
+
+                <!-- Formulario oculto -->
+                <div id="formUsuario" style="
+        display:none;
+        margin-top:15px;
+        background:#f5f6fa;
+        padding:20px;
+        border-radius:8px;
+        box-shadow:0px 1px 3px rgba(0,0,0,0.1);
+    ">
+                    <label>Nombre Completo:</label>
+                    <input type="text" id="nombreUsuario" placeholder="Ej: Juan Pérez"><br><br>
+
+                    <label>Correo Electrónico:</label>
+                    <input type="email" id="correoUsuario" placeholder="Ej: jperez@mail.com"><br><br>
+
+                    <label>Usuario/Login:</label>
+                    <input type="text" id="loginUsuario" placeholder="Ej: jperez"><br><br>
+
+                    <label>Rol:</label>
+                    <select id="rolUsuario"></select><br><br>
+
+                    <label>Estado:</label>
+                    <select id="estadoUsuario">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+
+                    <br><br>
+                    <button class="btn" onclick="agregarUsuario()">Guardar</button>
+                    <button class="btn" style="background:#95a5a6;"
+                        onclick="cancelarFormularioUsuario()">Cancelar</button>
+                </div>
+
+                <!-- Tabla Usuarios -->
+                <table style="margin-top:20px;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Login</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaUsuarios"></tbody>
+                </table>
+            </section>
+
+
+            <section id="clientes">
+                <h2>Clientes</h2>
+
+                <button class="btn" onclick="abrirModalCliente()">Agregar Nuevo Cliente</button>
+
+                <!-- === MODAL === -->
+                <div id="modalCliente" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="cerrarModalCliente()">&times;</span>
+                        <h3>Registrar Cliente</h3>
+
+                        <label>Tipo de Cliente:</label>
+                        <select id="tipoCliente">
+                            <option value="Persona">Persona</option>
+                            <option value="Empresa">Empresa</option>
+                        </select><br><br>
+
+                        <label>Nombres y Apellidos / Razón Social*:</label>
+                        <input type="text" id="nombreCliente"><br><br>
+
+                        <label>Nro. Cédula o NIT*:</label>
+                        <input type="text" id="cedulaNit"><br><br>
+
+                        <label>Nombre Punto de Venta*:</label>
+                        <input type="text" id="puntoVenta"><br><br>
+
+                        <label>CI (Si corresponde):</label>
+                        <input type="text" id="ciCliente"><br><br>
+
+                        <label>Correo Electrónico:</label>
+                        <input type="email" id="emailCliente"><br><br>
+
+                        <label>Celular*:</label>
+                        <input type="text" id="celCliente"><br><br>
+
+                        <label>Teléfono*:</label>
+                        <input type="text" id="telCliente"><br><br>
+
+                        <label>Dirección*:</label>
+                        <input type="text" id="dirCliente"><br><br>
+
+                        <label>Ubicación GPS*:</label>
+                        <input type="text" id="gpsCliente"><br><br>
+
+                        <label>Ciudad*:</label>
+                        <select id="ciudadCliente">
+                            <option value="La Paz">La Paz</option>
+                            <option value="El Alto">El Alto</option>
+                        </select><br><br>
+
+                        <label>Contacto*:</label>
+                        <input type="text" id="contactoCliente"><br><br>
+
+                        <label>Teléfono Contacto*:</label>
+                        <input type="text" id="telContactoCliente"><br><br>
+
+                        <label>Observaciones*:</label>
+                        <input type="text" id="obsCliente"><br><br>
+
+                        <button class="btn" id="btnGuardarCliente" onclick="guardarCliente()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA -->
+                <table style="margin-top:20px; width:100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Cédula/NIT</th>
+                            <th>P. Venta</th>
+                            <th>Ciudad</th>
+                            <th>Contacto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaClientes"></tbody>
+                </table>
+                <!-- MODAL DETALLES CON MAPA -->
+                <div id="modalDetalles" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:70%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalDetalles()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Detalles del Cliente</h3>
+
+                        <div style="display:flex; gap:20px; margin-top:15px;">
+                            <!-- Columna de datos -->
+                            <div style="flex:1;">
+                                <div id="contenidoDetalles"></div>
+                            </div>
+
+                            <!-- Columna de mapa -->
+                            <div style="flex:1;">
+                                <div id="mapaCliente"
+                                    style="height:300px; border-radius:8px; margin-right: 200px; margin: 100px;"></div>
+                            </div>
+                        </div>
+
+                        <button class="btn" style="margin-top:15px;" onclick="cerrarModalDetalles()">Cerrar</button>
+                    </div>
+                </div>
+
+
+
+
+            </section>
+
+
+
+            <section id="proveedores">
+                <h2>Proveedores</h2>
+
+                <button class="btn" onclick="abrirModalProveedor()">Agregar Nuevo Proveedor</button>
+
+                <!-- === MODAL AGREGAR/EDITAR PROVEEDOR === -->
+                <div id="modalProveedor" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalProveedor()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Proveedor</h3>
+
+                        <label>Nombre*:</label>
+                        <input type="text" id="nombreProveedor"><br><br>
+
+                        <label>Categorías (Selecciona varias)*:</label>
+                        <select id="categoriasProveedor" multiple>
+                            <option value="Grasas">Alimentos</option>
+                            <option value="Aceites">Bebidas</option>
+                            <option value="Lubricantes">Electrónica</option>
+                        </select><br><br>
+
+                        <label>Marcas (Selecciona varias)*:</label>
+                        <select id="marcasProveedor" multiple>
+                            <option value="Marca A">Marca A</option>
+                            <option value="Marca B">Marca B</option>
+                            <option value="Marca C">Marca C</option>
+                        </select><br><br>
+
+                        <label>Contactos:</label>
+                        <div id="contactosProveedor">
+                            <div>
+                                <input type="text" placeholder="Nombre Contacto">
+                                <input type="text" placeholder="Teléfono Contacto">
+                            </div>
+                        </div>
+                        <button class="btn" onclick="agregarCampoContacto()">Agregar Contacto</button><br><br>
+
+                        <button class="btn" id="btnGuardarProveedor" onclick="guardarProveedor()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE PROVEEDORES -->
+                <table style="margin-top:20px; width:100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categorías</th>
+                            <th>Marcas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProveedores"></tbody>
+                </table>
+
+                <!-- MODAL DETALLES PROVEEDOR -->
+                <div id="modalDetallesProveedor" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalDetallesProveedor()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Detalles del Proveedor</h3>
+                        <div id="contenidoDetallesProveedor"></div>
+                        <button class="btn" style="margin-top:15px;"
+                            onclick="cerrarModalDetallesProveedor()">Cerrar</button>
+                    </div>
+                </div>
+            </section>
+
+
+            <section id="categorias">
+                <h2>Categorías</h2>
+
+                <button class="btn" onclick="abrirModalCategoria()">Agregar Nueva Categoría</button>
+
+                <!-- === MODAL AGREGAR/EDITAR CATEGORÍA === -->
+                <div id="modalCategoria" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:40%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalCategoria()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Categoría</h3>
+
+                        <label>Nombre*:</label>
+                        <input type="text" id="nombreCategoria"><br><br>
+
+                        <label>Descripción:</label>
+                        <input type="text" id="descCategoria"><br><br>
+
+                        <label>Estado:</label>
+                        <select id="estadoCategoria">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select><br><br>
+
+                        <button class="btn" id="btnGuardarCategoria" onclick="guardarCategoria()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE CATEGORÍAS -->
+                <table style="margin-top:20px; width:100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCategorias"></tbody>
+                </table>
+            </section>
+
+
+            <section id="marcas">
+                <h2>Marcas</h2>
+
+                <button class="btn" onclick="abrirModalMarca()">Agregar Nueva Marca</button>
+
+                <!-- === MODAL AGREGAR/EDITAR MARCA === -->
+                <div id="modalMarca" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:40%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalMarca()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Marca</h3>
+
+                        <label>Nombre*:</label>
+                        <input type="text" id="nombreMarca"><br><br>
+
+                        <label>Descripción:</label>
+                        <input type="text" id="descMarca"><br><br>
+
+                        <label>Estado:</label>
+                        <select id="estadoMarca">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select><br><br>
+
+                        <button class="btn" id="btnGuardarMarca" onclick="guardarMarca()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE MARCAS -->
+                <table style="margin-top:20px; width:100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMarcas"></tbody>
+                </table>
+            </section>
+
+
+            <section id="productos">
+                <h2>Productos</h2>
+
+                <button class="btn" onclick="abrirModalProducto()">Agregar Nuevo Producto</button>
+
+                <!-- === MODAL AGREGAR/EDITAR PRODUCTO === -->
+                <div id="modalProducto" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalProducto()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Producto</h3>
+
+                        <label>Nombre*:</label>
+                        <input type="text" id="nombreProducto"><br><br>
+
+                        <label>Categoría*:</label>
+                        <select id="categoriaProducto"></select><br><br>
+
+                        <label>Marca*:</label>
+                        <select id="marcaProducto"></select><br><br>
+
+                        <label>Precio*:</label>
+                        <input type="number" id="precioProducto" step="0.01"><br><br>
+
+                        <label>Stock*:</label>
+                        <input type="number" id="stockProducto" min="0"><br><br>
+
+                        <label>Descripción:</label>
+                        <input type="text" id="descProducto"><br><br>
+
+                        <button class="btn" id="btnGuardarProducto" onclick="guardarProducto()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE PRODUCTOS -->
+                <table style="margin-top:20px; width:100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Marca</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos"></tbody>
+                </table>
+            </section>
+
+
+            <section class="almacen">
+                <h2>Almacén Central</h2>
+
+                <button class="btn" onclick="abrirModalAlmacen()">Agregar/Actualizar Stock</button>
+
+                <!-- === MODAL AGREGAR/EDITAR STOCK === -->
+                <div id="modalAlmacen" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalAlmacen()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Actualizar Stock de Producto</h3>
+
+                        <label>Producto*:</label>
+                        <select id="productoAlmacen"></select><br><br>
+
+                        <label>Cantidad*:</label>
+                        <input type="number" id="cantidadAlmacen" min="0"><br><br>
+
+                        <button class="btn" id="btnGuardarAlmacen" onclick="guardarStock()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE STOCK -->
+                <table style="margin-top:20px; width:100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Marca</th>
+                            <th>Stock Actual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAlmacen"></tbody>
+                </table>
+            </section>
+
+
+            <section id="solicitudIngreso">
+                <h2>Solicitud de Ingreso</h2>
+
+                <button class="btn" onclick="abrirModalSolicitud()">Nueva Solicitud</button>
+
+                <!-- === MODAL AGREGAR/EDITAR SOLICITUD === -->
+                <div id="modalSolicitud" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalSolicitud()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Solicitud de Ingreso</h3>
+
+                        <label>Producto*:</label>
+                        <select id="productoSolicitud"></select><br><br>
+
+                        <label>Cantidad*:</label>
+                        <input type="number" id="cantidadSolicitud" min="1"><br><br>
+
+                        <label>Solicitante*:</label>
+                        <input type="text" id="solicitanteSolicitud"><br><br>
+
+                        <button class="btn" onclick="guardarSolicitud()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE SOLICITUDES -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Solicitante</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitud"></tbody>
+                </table>
+            </section>
+
+
+            <section id="ordenSalida">
+                <h2>Orden de Salida</h2>
+
+                <!-- Contenedor flex: botón a la izquierda, buscador a la derecha -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+
+                    <input type="text" id="buscadorOrden" placeholder="Buscar..."
+                        style="padding:15px 20px; border-radius:6px; border:1px solid #ccc;" onkeyup="filtrarOrdenes()">
+
+                    <button class="btn" onclick="abrirModalOrden()">Nueva Orden</button>
+
+
+                </div>
+
+                <!-- === MODAL AGREGAR/EDITAR ORDEN === -->
+                <div id="modalOrden" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:60%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalOrden()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Orden de Salida</h3>
+
+                        <label>Sucursal o Vehículo destino*:</label>
+                        <select id="destinoOrden"></select><br><br>
+
+                        <label>Productos*:</label>
+                        <select id="productoOrden"></select><br><br>
+
+                        <label>Cantidad*:</label>
+                        <input type="number" id="cantidadOrden" min="1"><br><br>
+
+                        <label>Usuario que autoriza/entrega*:</label>
+                        <input type="text" id="usuarioEntregaOrden"><br><br>
+
+                        <label>Usuario aprobador*:</label>
+                        <input type="text" id="usuarioAprobadorOrden"><br><br>
+
+                        <label>Fecha y hora de salida*:</label>
+                        <input type="datetime-local" id="fechaHoraOrden"><br><br>
+
+                        <label>Observaciones (opcional):</label>
+                        <input type="text" id="observacionesOrden"><br><br>
+
+                        <button class="btn" onclick="guardarOrden()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE ÓRDENES DE SALIDA -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Destino</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Usuario Entrega</th>
+                            <th>Usuario Aprobador</th>
+                            <th>Fecha/Hora</th>
+                            <th>Observaciones</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaOrden"></tbody>
+                </table>
+            </section>
+
+            <section id="ventas">
+                <h2>Ventas / Pedidos</h2>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+
+                    <input type="text" id="buscadorOrden" placeholder="Buscar..."
+                        style="padding:15px 20px; border-radius:6px; border:1px solid #ccc;" onkeyup="filtrarVentas()">
+
+                    <button class="btn" onclick="abrirModalVenta()">Nueva Venta</button>
+
+                </div>
+
+                <!-- === MODAL REGISTRAR VENTA === -->
+                <div id="modalVenta" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:30px auto; padding:20px; width:70%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalVenta()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Venta / Pedido</h3>
+
+                        <label>Cliente*:</label>
+                        <select id="clienteVenta"></select><br><br>
+
+                        <label>Empleado que realiza la venta*:</label>
+                        <input type="text" id="empleadoVenta"><br><br>
+
+                        <label>Fecha y hora*:</label>
+                        <input type="datetime-local" id="fechaHoraVenta"><br><br>
+
+                        <label>Sucursal de origen*:</label>
+                        <select id="sucursalVenta">
+                            <option value="Sucursal 1">Sucursal 1</option>
+                            <option value="Sucursal 2">Sucursal 2</option>
+                            <option value="Sucursal 3">Sucursal 3</option>
+                        </select><br><br>
+
+                        <label>Forma de pago*:</label>
+                        <select id="formaPagoVenta">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="QR">QR</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Otro">Otro</option>
+                        </select><br><br>
+
+                        <h4>Detalle de Productos*</h4>
+                        <div id="detalleProductosVenta">
+                            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                <select class="productoVenta">
+                                    <!-- Se llenará dinámicamente -->
+                                </select>
+                                <input type="number" class="cantidadVenta" placeholder="Cantidad" min="1">
+                                <input type="number" class="precioVenta" placeholder="Precio Unitario" min="0">
+                                <button type="button" onclick="agregarDetalleProducto(this)"
+                                    style="background:#3498db;color:white;border:none;padding:5px 8px;border-radius:4px;">+</button>
+                            </div>
+                        </div>
+
+                        <label>Descuentos (si aplica):</label>
+                        <input type="number" id="descuentoVenta" value="0" min="0"><br><br>
+
+                        <label>Impuestos (IVA u otros):</label>
+                        <input type="number" id="impuestosVenta" value="0" min="0"><br><br>
+
+                        <label>Total:</label>
+                        <input type="number" id="totalVenta" value="0" readonly style="background:#f0f0f0;"><br><br>
+
+                        <label>Estado del pedido / venta*:</label>
+                        <select id="estadoVenta">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Enviado">Enviado</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select><br><br>
+
+                        <button class="btn" onclick="guardarVenta()">Guardar</button>
+                        <button class="btn-2">Solicitar Rebaja</button>
+
+                    </div>
+                </div>
+
+                <!-- TABLA DE VENTAS -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Nro. Venta</th>
+                            <th>Cliente</th>
+                            <th>Empleado</th>
+                            <th>Fecha/Hora</th>
+                            <th>Detalle Productos</th>
+                            <th>Descuento</th>
+                            <th>Impuestos</th>
+                            <th>Total</th>
+                            <th>Sucursal</th>
+                            <th>Forma de Pago</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVentas"></tbody>
+                </table>
+            </section>
+
+
+            <section id="devoluciones">
+                <h2>Devoluciones</h2>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+
+                    <input type="text" id="buscadorDevolucion" placeholder="Buscar..."
+                        style="padding:15px 20px; border-radius:6px; border:1px solid #ccc;"
+                        onkeyup="filtrarDevoluciones()">
+
+                    <button class="btn" onclick="abrirModalDevolucion()">Nueva Devolución</button>
+
+                </div>
+
+                <!-- === MODAL REGISTRAR DEVOLUCIÓN === -->
+                <div id="modalDevolucion" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:30px auto; padding:20px; width:60%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalDevolucion()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Devolución</h3>
+
+                        <label>Cliente*:</label>
+                        <select id="clienteDevolucion"></select><br><br>
+
+                        <label>Productos*:</label>
+                        <div id="detalleProductosDevolucion">
+                            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                <select class="productoDevolucion"></select>
+                                <input type="number" class="cantidadDevolucion" placeholder="Cantidad" min="1">
+                                <button type="button" onclick="agregarDetalleProductoDevolucion(this)"
+                                    style="background:#3498db;color:white;border:none;padding:5px 8px;border-radius:4px;">+</button>
+                            </div>
+                        </div><br>
+
+                        <label>Usuario aprobador*:</label>
+                        <input type="text" id="usuarioAprobadorDevolucion"><br><br>
+
+                        <label>Fecha y hora*:</label>
+                        <input type="datetime-local" id="fechaHoraDevolucion"><br><br>
+
+                        <label>Observaciones:</label>
+                        <input type="text" id="observacionesDevolucion"><br><br>
+
+                        <label>Estado*:</label>
+                        <select id="estadoDevolucion">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Aprobada">Aprobada</option>
+                            <option value="Rechazada">Rechazada</option>
+                        </select><br><br>
+
+                        <button class="btn" onclick="guardarDevolucion()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE DEVOLUCIONES -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Nro. Devolución</th>
+                            <th>Cliente</th>
+                            <th>Detalle Productos</th>
+                            <th>Usuario Aprobador</th>
+                            <th>Fecha/Hora</th>
+                            <th>Observaciones</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaDevoluciones"></tbody>
+                </table>
+            </section>
+
+
+            <section id="sucursales">
+                <h2>Sucursales</h2>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <input type="text" id="buscadorSucursal" placeholder="Buscar..."
+                        style="padding:15px 20px; border-radius:6px; border:1px solid #ccc;"
+                        onkeyup="filtrarSucursales()">
+                    <button class="btn" onclick="abrirModalSucursal()">Agregar Sucursal</button>
+                </div>
+
+                <!-- === MODAL REGISTRAR SUCURSAL === -->
+                <div id="modalSucursal" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:30px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalSucursal()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Sucursal</h3>
+
+                        <label>Nombre Sucursal*:</label>
+                        <input type="text" id="nombreSucursal"><br><br>
+
+                        <label>Dirección*:</label>
+                        <input type="text" id="direccionSucursal"><br><br>
+
+                        <label>Ciudad*:</label>
+                        <select id="ciudadSucursal">
+                            <option value="La Paz">La Paz</option>
+                            <option value="El Alto">El Alto</option>
+                        </select><br><br>
+
+                        <h4>Vehículos Asociados</h4>
+                        <div id="vehiculosSucursal">
+                            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                <input type="text" class="vehiculoSucursal" placeholder="Nombre / Matrícula">
+                                <button type="button" onclick="agregarVehiculoSucursal(this)"
+                                    style="background:#3498db;color:white;border:none;padding:5px 8px;border-radius:4px;">+</button>
+                            </div>
+                        </div>
+
+                        <button class="btn" onclick="guardarSucursal()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE SUCURSALES -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Ciudad</th>
+                            <th>Vehículos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSucursales"></tbody>
+                </table>
+            </section>
+
+
+            <section id="configuracionSistema">
+                <h2>Configuración del Sistema</h2>
+
+                <button class="btn" onclick="abrirModalConfiguracion()">Editar Configuración</button>
+
+                <!-- === MODAL CONFIGURACIÓN === -->
+                <div id="modalConfiguracion" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalConfiguracion()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Editar Configuración del Sistema</h3>
+
+                        <label>Nombre del Sistema*:</label>
+                        <input type="text" id="nombreSistema"><br><br>
+
+                        <label>Moneda*:</label>
+                        <input type="text" id="monedaSistema"><br><br>
+
+                        <label>IVA (%):</label>
+                        <input type="number" id="ivaSistema" min="0" max="100"><br><br>
+
+                        <label>Formas de Pago:</label>
+                        <input type="text" id="formasPagoSistema"
+                            placeholder="Separar por comas, ej: Efectivo, QR, Transferencia"><br><br>
+
+                        <label>Opciones de Notificación:</label>
+                        <input type="text" id="notificacionSistema"
+                            placeholder="Separar por comas, ej: Correo, WhatsApp"><br><br>
+
+                        <button class="btn" onclick="guardarConfiguracion()">Guardar Configuración</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE CONFIGURACIÓN -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre Sistema</th>
+                            <th>Moneda</th>
+                            <th>IVA</th>
+                            <th>Formas de Pago</th>
+                            <th>Notificaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaConfiguracion"></tbody>
+                </table>
+            </section>
+
+
+            <section id="ajustesUsuario">
+                <h2>Ajustes de Usuario</h2>
+
+                <button class="btn" onclick="abrirModalUsuario()">Editar Ajustes</button>
+
+                <!-- === MODAL AJUSTES USUARIO === -->
+                <div id="modalUsuario" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalUsuario()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Ajustes de Usuario</h3>
+
+                        <label>Nombre:</label>
+                        <input type="text" id="nombreUsuario"><br><br>
+
+                        <label>Correo Electrónico:</label>
+                        <input type="email" id="emailUsuario"><br><br>
+
+                        <label>Contraseña:</label>
+                        <input type="password" id="passUsuario"><br><br>
+
+                        <label>Idioma:</label>
+                        <select id="idiomaUsuario">
+                            <option value="Español">Español</option>
+                            <option value="Inglés">Inglés</option>
+                        </select><br><br>
+
+                        <label>Notificaciones:</label>
+                        <input type="text" id="notificacionUsuario"
+                            placeholder="Separar por comas, ej: Correo, WhatsApp"><br><br>
+
+                        <button class="btn" onclick="guardarUsuario()">Guardar Ajustes</button>
+                    </div>
+                </div>
+
+                <!-- TABLA AJUSTES USUARIO -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Idioma</th>
+                            <th>Notificaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios"></tbody>
+                </table>
+            </section>
+
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <section id="reportes">
+                <h2>Reportes</h2>
+
+                <!-- FILTROS -->
+                <div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
+                    <div>
+                        <label>Producto:</label>
+                        <select id="filtroProducto">
+                            <option value="">Todos</option>
+                            <option value="Producto A">Producto A</option>
+                            <option value="Producto B">Producto B</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Sucursal:</label>
+                        <select id="filtroSucursal">
+                            <option value="">Todas</option>
+                            <option value="Sucursal 1">Sucursal 1</option>
+                            <option value="Sucursal 2">Sucursal 2</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Tipo de Movimiento:</label>
+                        <select id="filtroMovimiento">
+                            <option value="">Todos</option>
+                            <option value="Entrada">Entrada</option>
+                            <option value="Salida">Salida</option>
+                            <option value="Ajuste">Ajuste</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Estado:</label>
+                        <select id="filtroEstado">
+                            <option value="">Todos</option>
+                            <option value="Registrado">Registrado</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Anulado">Anulado</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Fecha Desde:</label>
+                        <input type="date" id="filtroFechaDesde">
+                    </div>
+
+                    <div>
+                        <label>Fecha Hasta:</label>
+                        <input type="date" id="filtroFechaHasta">
+                    </div>
+
+                    <div style="align-self:end;">
+                        <button class="btn" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE REPORTES -->
+                <table id="tablaReporteAvanzado" style="width:100%; text-align:center; margin-top:20px;">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Sucursal</th>
+                            <th>Tipo Movimiento</th>
+                            <th>Cantidad</th>
+                            <th>Fecha y Hora</th>
+                            <th>Usuario Responsable</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyReporteAvanzado"></tbody>
+                </table>
+
+                <!-- BOTONES DE EXPORTACIÓN -->
+                <div style="margin-top:15px;">
+                    <button class="btn" onclick="exportarCSV()">Exportar CSV</button>
+                    <button class="btn" onclick="exportarExcel()">Exportar Excel</button>
+                    <button class="btn" onclick="exportarPDF()">Exportar PDF</button>
+                    <button class="btn" onclick="window.print()">Imprimir</button>
+                </div>
+            </section>
+
+
+
+
+            <section id="solicitudIngreso">
+                <h2>Solicitud de Ingreso</h2>
+
+                <button class="btn" onclick="abrirModalSolicitud()">Nueva Solicitud</button>
+
+                <!-- === MODAL AGREGAR/EDITAR SOLICITUD === -->
+                <div id="modalSolicitud" class="modal"
+                    style="display:none; position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                    <div class="modal-content"
+                        style="background:#fff; margin:50px auto; padding:20px; width:50%; border-radius:12px;">
+                        <span class="close" onclick="cerrarModalSolicitud()"
+                            style="float:right; cursor:pointer; font-size:24px;">&times;</span>
+                        <h3>Registrar Solicitud de Ingreso</h3>
+
+                        <label>Producto*:</label>
+                        <select id="productoSolicitud"></select><br><br>
+
+                        <label>Cantidad*:</label>
+                        <input type="number" id="cantidadSolicitud" min="1"><br><br>
+
+                        <label>Solicitante*:</label>
+                        <input type="text" id="solicitanteSolicitud"><br><br>
+
+                        <button class="btn" onclick="guardarSolicitud()">Guardar</button>
+                    </div>
+                </div>
+
+                <!-- TABLA DE SOLICITUDES -->
+                <table style="margin-top:20px; width:100%; text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Solicitante</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSolicitud"></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+<script src="scripts.js"></script>
+
+</body>
+</html>
